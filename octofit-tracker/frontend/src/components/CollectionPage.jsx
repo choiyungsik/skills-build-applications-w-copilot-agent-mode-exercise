@@ -14,7 +14,7 @@ function displayValue(value, format) {
   return String(value)
 }
 
-export default function CollectionPage({ title, description, collection, columns }) {
+export default function CollectionPage({ title, description, endpoint, columns }) {
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -23,7 +23,7 @@ export default function CollectionPage({ title, description, collection, columns
   useEffect(() => {
     const controller = new AbortController()
 
-    fetchCollection(collection, controller.signal)
+    fetchCollection(endpoint, controller.signal)
       .then(setRecords)
       .catch((requestError) => {
         if (requestError.name !== 'AbortError') {
@@ -35,7 +35,7 @@ export default function CollectionPage({ title, description, collection, columns
       })
 
     return () => controller.abort()
-  }, [collection, reloadKey])
+  }, [endpoint, reloadKey])
 
   function refresh() {
     setLoading(true)
@@ -85,7 +85,7 @@ export default function CollectionPage({ title, description, collection, columns
             {loading ? (
               <tr><td className="text-secondary py-4" colSpan={columns.length}>Loading {title.toLowerCase()}...</td></tr>
             ) : records.length ? records.map((record, index) => (
-              <tr key={record._id ?? record.id ?? `${collection}-${index}`}>
+              <tr key={record._id ?? record.id ?? `record-${index}`}>
                 {columns.map((column) => (
                   <td key={column.key}>{displayValue(record[column.key], column.format)}</td>
                 ))}
